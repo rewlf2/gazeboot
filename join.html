@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-HK" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>GazeStore Portal</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+		<!-- Ajax code which queries a php file that returns a JSON file for results for processing -->
+	
+        <script type='text/javascript' src='scripts/jquery-3.2.0.js'></script>
+        <script src="scripts/jquery-3.2.0.js"></script>
+
+        <script type="text/javascript">		
+        var xmlHttp;
+
+		function submitJoin() {
+			sbutton.disabled = true;
+			try{
+				xmlHttp = new XMLHttpRequest();
+				} catch(e){
+				try{
+				xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+				} catch(e){
+				try{
+				xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch(e){
+				alert("Error!");
+				return;
+				}
+				}
+			}
+			xmlHttp.onreadystatechange = function() {
+				if(xmlHttp.readyState == 4){
+					// error.innerHTML = xmlHttp.responseText;
+					var duce = jQuery.parseJSON(xmlHttp.responseText);
+					var statusText = duce.status;
+					var redirectText = duce.redirect;
+					var typeText = duce.type;
+					
+					if (typeText == "Success")
+					{
+						// Runs when form is correct and data is successfully inserted
+						// This page should redirect users if inserting is successful
+						emailError.innerHTML = "";
+						usernameError.innerHTML = "";
+						passwordError.innerHTML = "";
+						nicknameError.innerHTML = "";
+						error.innerHTML = "";
+					}
+					else if (typeText == "Validation")
+					{
+						// Runs when form is invalid
+						var emailValid = duce.emailValid;
+						var usernameValid = duce.usernameValid;
+						var passwordValid = duce.passwordValid;
+						var nicknameValid = duce.nicknameValid;
+						
+						if (!emailValid)
+							emailError.innerHTML = "Invalid";
+						else
+							emailError.innerHTML = "";
+							
+						if (!usernameValid)
+							usernameError.innerHTML = "Must start with letter, and consists of 6-20 letters or numbers";
+						else
+							usernameError.innerHTML = "";
+							
+						if (!passwordValid)
+							passwordError.innerHTML = "6-20 characters long";
+						else
+							passwordError.innerHTML = "";
+							
+						if (!nicknameValid)
+							nicknameError.innerHTML = "3-20 letter, number, underscores, hyphens or whitespaces<br>Must start with letter";
+						else
+							nicknameError.innerHTML = "";
+					}
+					else if (typeText == "Database")
+					{
+						// Runs when database operation has error
+						emailError.innerHTML = "";
+						usernameError.innerHTML = "";
+						passwordError.innerHTML = "";
+						nicknameError.innerHTML = "";
+						
+						if (statusText=="Email used")
+							emailError.innerHTML = "An account with this email address already exists";
+						else if (statusText=="Username used")
+							usernameError.innerHTML = "This username has already been used";
+						else
+							error.innerHTML = statusText;
+					}
+					else if (typeText == "System")
+					{
+						// Runs when systematic error has occured
+						emailError.innerHTML = "";
+						usernameError.innerHTML = "";
+						passwordError.innerHTML = "";
+						nicknameError.innerHTML = "";
+						
+						error.innerHTML = statusText;
+					}
+					// Validation variables
+					// An error text can be used for real-timefeedback to users and for debugging
+					// error.innerHTML = xmlHttp.responseText;
+					if (redirectText != "no")
+					{
+						window.location = redirectText;
+					}
+				}
+			}
+			xmlHttp.open("POST", "query_join.php", true);
+			xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xmlHttp.send("username=" + join.inputUser.value + "&password=" + join.inputPassword.value + "&email=" + join.inputEmail.value + "&nickname=" + join.inputNickname.value);
+			sbutton.disabled = false;
+		}
+		
+		// Toggles password visibility and icon whenever button is pressed
+		
+		function togglePassword() {
+			if (inputPassword.type == "password") {
+				inputPassword.type = "text";
+				tbutton.className = "glyphicon glyphicon-eye-open";
+			}
+			else {
+				inputPassword.type = "password";
+				tbutton.className = "glyphicon glyphicon-eye-close";
+			}
+		}
+		</script>
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">GazeStore Portal</h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="feature.html">Features</a></li>
+                  <li><a href="contact.html">Contact</a></li>
+                  <li class="active"><a href="#">Join</a></li>
+                  <li><a href="signin.html">Signin</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+
+		  <form id="join" class="form-signin">
+			<label for="inputEmail" class="sr-only">Email address</label>
+			<input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="email" autofocus autocomplete="on" required type="email">
+			<h5><div class="error" name="error" id="emailError" style="font-size: 12px; color:#f1c40f;"></div></h5>
+			
+			<label for="inputUser" class="sr-only">Username</label>
+			<input type="text" id="inputUser" class="form-control" placeholder="User name" name="username" required pattern="^[a-zA-Z][a-zA-Z0-9]{5,19}$" title="6-20 characters starting with alphabet">
+			<h5><div class="error" name="error" id="usernameError" style="font-size: 12px; color:#f1c40f;"></div></h5>
+
+			<div class="input-group">
+				<label for="inputPassword" class="sr-only">Password</label>
+					<input type="password" id="inputPassword" class="form-control" placeholder="Password" required pattern="^[a-zA-Z0-9]{6,20}$" title="6-20 characters">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" onClick="togglePassword()">
+							<span id="tbutton" class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+						</button>
+					</span>
+				</div><!-- /input-group -->
+			<h5><div class="error" name="error" id="passwordError" style="font-size: 12px; color:#f1c40f;"></div></h5>
+			  
+			  
+			
+			<label for="inputNickname" class="sr-only">Nickname</label>
+			<input type="text" id="inputNickname" class="form-control" placeholder="Nickname" required pattern="^[a-zA-Z0-9]{3,20}$">
+			<h5><div class="error" name="error" id="nicknameError" style="font-size: 12px; color:#f1c40f;">3-20 letter, number, underscores, hyphens or whitespaces<br>Must start with letter</div></h5>
+			
+			<div class="btn-group btn-block" role="group">
+				<button class="btn btn-primary" style="width:50%" id="sbutton" type="button" onclick="submitJoin()">Sign Up</button>
+				<button type="reset" class="btn btn-default" style="width:50%">Reset</button>
+			</div>
+					
+		  </form>
+          <h5><div class="error" name="error" id="error" style="font-size: 12px; color:#f1c40f;"></div></h5>
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

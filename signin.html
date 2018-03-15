@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>GazeStore Portal</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+        <script type="text/javascript">		
+        var xmlHttp;
+
+		function submitSignin() {
+			sbutton.disabled = true;
+			try{
+				xmlHttp = new XMLHttpRequest();
+				} catch(e){
+				try{
+				xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+				} catch(e){
+				try{
+				xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch(e){
+				alert("Error!");
+				return;
+				}
+				}
+			}
+			xmlHttp.onreadystatechange = function() {
+				if(xmlHttp.readyState == 4){
+					// Validation variables
+					// An error text can be used for real-timefeedback to users and for debugging
+					
+					// error.innerHTML = xmlHttp.responseText;
+					var duce = jQuery.parseJSON(xmlHttp.responseText);
+					var statusText = duce.status;
+					var redirectText = duce.redirect;
+					var typeText = duce.type;
+					
+					if (typeText == "Success")
+					{
+						// Runs when form is correct and data is successfully inserted
+						// This page should redirect users if inserting is successful
+						credError.innerHTML = "";
+						passwordError.innerHTML = "";
+						inputCred.disabled = true;
+						inputPassword.disabled = true;
+					}
+					else if (typeText == "Validation")
+					{
+						// Runs when form is invalid
+						var credValid = duce.credValid;
+						var passwordValid = duce.passwordValid;
+							
+						if (!credValid)
+							credError.innerHTML = "User name or email not inputted";
+						else
+							credError.innerHTML = "";
+							
+						if (!passwordValid)
+							passwordError.innerHTML = "Password not inputted";
+						else
+							passwordError.innerHTML = "";
+							
+						error.innerHTML = "";
+					}
+					else if (typeText == "Cred")
+					{
+						credError.innerHTML = "";
+						passwordError.innerHTML = "";
+							
+						error.innerHTML = statusText;
+					}
+					else if (typeText == "Database")
+					{
+						// Runs when database operation has error
+						credError.innerHTML = "";
+						passwordError.innerHTML = "";
+						
+						error.innerHTML = statusText;
+					}
+					else if (typeText == "System")
+					{
+						// Runs when systematic error has occured
+						credError.innerHTML = "";
+						passwordError.innerHTML = "";
+						
+						error.innerHTML = statusText;
+					}
+					// Validation variables
+					// An error text can be used for real-timefeedback to users and for debugging
+					// error.innerHTML = xmlHttp.responseText;
+					
+					if (redirectText != "no")
+					{
+						window.location = redirectText;
+					}
+				}
+			}
+			xmlHttp.open("POST", "query_signin.php", true);
+			xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xmlHttp.send("cred=" + signin.inputCred.value + "&password=" + signin.inputPassword.value);
+			sbutton.disabled = false;
+		}		
+		</script>
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">GazeStore Portal</h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="feature.html">Features</a></li>
+                  <li><a href="contact.html">Contact</a></li>
+                  <li><a href="join.html">Join</a></li>
+                  <li class="active"><a href="#">Signin</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+			  <form id="signin" class="form-signin">
+				<label for="inputCred" class="sr-only" name="email">Username or Email address</label>
+				<input id="inputCred" class="form-control" placeholder="User name or email" required autofocus name="Cred">
+          <h5><div class="error" name="error" id="credError" style="font-size: 12px; color:#f1c40f;"></div></h5>
+				<label for="inputPassword" class="sr-only">Password</label>
+				<input type="password" id="inputPassword" class="form-control" placeholder="Password" required maxlength="20">
+          <h5><div class="error" name="error" id="passwordError" style="font-size: 12px; color:#f1c40f;"></div></h5>
+				<div class="checkbox">
+				</div>
+				<button class="btn btn-lg btn-primary btn-block" id="sbutton" type="button" onclick="submitSignin()">Sign in</button>
+			  </form>
+          </div>
+          <h5><div class="error" name="error" id="error" style="font-size: 12px; color:#f1c40f;"></div></h5>
+          <h5><div class="error" name="error2" id="error" style="font-size: 12px; color:#f1c40f;"></div></h5>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
